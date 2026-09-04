@@ -9,7 +9,6 @@ import {
   Download,
   FileText,
   Search,
-  Sparkles,
   Target,
 } from "lucide-react";
 import { Link } from "../../lib/router";
@@ -59,7 +58,7 @@ export default function ResourcesLandingPage() {
           <div className="relative overflow-hidden rounded-[38px] bg-ink p-6 text-white shadow-lift sm:p-9">
             <div className="absolute -right-28 -top-28 h-80 w-80 rounded-full border-[58px] border-jade/35" />
             <div className="relative z-10">
-              <span className="eyebrow !text-[#9bd5ba]"><Sparkles size={14} /> This week’s guided path</span>
+              <span className="eyebrow !text-[#9bd5ba]"><Target size={14} /> This week’s guided path</span>
               <h2 className="mt-5 font-display text-4xl leading-none tracking-[-0.045em] sm:text-5xl">From data curious<br /><i className="text-[#E59779]">to interview ready.</i></h2>
               <div className="mt-8 space-y-3">
                 {[["01", "SQL for Product Decisions", "2h 40m"], ["02", "Product Analytics Field Guide", "42 pages"], ["03", "Interview Stories that Stick", "1h 20m"]].map(([number, title, duration]) => (

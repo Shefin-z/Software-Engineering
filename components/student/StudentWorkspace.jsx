@@ -47,7 +47,6 @@ import {
   Settings,
   Share2,
   ShieldCheck,
-  Sparkles,
   Star,
   Target,
   Trophy,
@@ -930,7 +929,7 @@ function Overview({ onNavigate, onOpenJob, jobs: availableJobs, data, loading, e
         <div className="panel overflow-hidden p-6">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
-              <span className="eyebrow"><Sparkles size={13} /> Real progress summary</span>
+              <span className="eyebrow"><Activity size={13} /> Real progress summary</span>
               <h2 className="mt-2 text-xl font-extrabold tracking-[-0.035em]">{readinessScore}% readiness from your saved progress.</h2>
               <p className="mt-1 text-sm text-muted">No demo scores—this result uses your profile, verified assessments and learning records.</p>
             </div>
@@ -1399,7 +1398,7 @@ function CareerVault({ notify, photo, setPhoto, data, setData }) {
             {!data.certifications.length && <CvEmpty copy="No certifications added yet." />}
           </CvEditorSection>
 
-          <button onClick={() => notify("AI strengthened your summary and added role keywords.")} className="btn-secondary w-full text-cobalt"><Sparkles size={16} /> Improve with AI</button>
+          <button onClick={() => notify("AI strengthened your summary and added role keywords.")} className="btn-secondary w-full text-cobalt"><Zap size={16} /> Improve with AI</button>
         </div>
       </section>
       <section>
@@ -1515,7 +1514,7 @@ function AssessmentsPage({
       <section className="clay-accent-panel panel overflow-hidden bg-ink text-white">
         <div className="grid gap-6 p-6 sm:p-8 lg:grid-cols-[1fr_auto] lg:items-center">
           <div>
-            <span className="eyebrow !text-[#AFC0FF]"><Sparkles size={13} /> Gemini adaptive journey</span>
+            <span className="eyebrow !text-[#AFC0FF]"><Target size={13} /> Gemini adaptive journey</span>
             <h2 className="mt-3 text-3xl font-extrabold tracking-[-0.045em]">
               {program?.status === "completed" ? "All 10 levels completed." : `Level ${currentLevel}: ${program?.levels?.[currentLevel - 1]?.label || "Foundation"}`}
             </h2>
@@ -1615,7 +1614,7 @@ function LegacyAssessmentsPage({ assessments, loading, error, onRetry, onStart }
       <section className="grid gap-4 md:grid-cols-3">
         <div className="clay-accent-panel panel col-span-2 overflow-hidden bg-ink p-6 text-white md:col-span-2">
           <div className="flex items-start justify-between gap-5">
-            <div><span className="eyebrow !text-[#AFC0FF]"><Sparkles size={13} /> Recommended next</span><h2 className="mt-3 text-2xl font-extrabold tracking-[-0.04em]">{recommended.title}</h2><p className="mt-2 max-w-md text-sm leading-6 text-white/60">{recommended.description || `Measure your ${recommended.category.toLowerCase()} knowledge with administrator-published questions.`}</p><button onClick={() => onStart(recommended)} className="clay-hero-button btn-accent mt-5">Start {recommended.time_limit_minutes}-minute assessment <ArrowRight size={16} /></button></div>
+            <div><span className="eyebrow !text-[#AFC0FF]"><ArrowRight size={13} /> Recommended next</span><h2 className="mt-3 text-2xl font-extrabold tracking-[-0.04em]">{recommended.title}</h2><p className="mt-2 max-w-md text-sm leading-6 text-white/60">{recommended.description || `Measure your ${recommended.category.toLowerCase()} knowledge with administrator-published questions.`}</p><button onClick={() => onStart(recommended)} className="clay-hero-button btn-accent mt-5">Start {recommended.time_limit_minutes}-minute assessment <ArrowRight size={16} /></button></div>
             <span className="hidden h-28 w-28 shrink-0 place-items-center rounded-full border-[18px] border-jade text-center sm:grid"><span><b className="block text-2xl">{recommended.question_count}</b><small className="text-[9px] uppercase tracking-wider text-white/60">questions</small></span></span>
           </div>
         </div>
@@ -1726,7 +1725,7 @@ function LearningPage({ notify }) {
   return (
     <div className="space-y-5">
       <section className="panel grid overflow-hidden md:grid-cols-[1fr_.6fr]">
-        <div className="p-6 sm:p-8"><span className="eyebrow"><Sparkles size={13} /> Personalized next step</span><h2 className="mt-3 text-2xl font-extrabold tracking-[-0.04em]">Finish SQL for Product Decisions</h2><p className="mt-2 max-w-lg text-sm leading-6 text-muted">Completing this course supports three of your top five job matches and closes your biggest analytics gap.</p><div className="mt-5 flex items-center gap-4"><button onClick={() => notify("Course resumed at lesson 7.")} className="btn-accent"><Play size={15} fill="currentColor" /> Continue learning</button><span className="text-xs font-bold text-muted">32 min left</span></div></div>
+        <div className="p-6 sm:p-8"><span className="eyebrow"><Target size={13} /> Personalized next step</span><h2 className="mt-3 text-2xl font-extrabold tracking-[-0.04em]">Finish SQL for Product Decisions</h2><p className="mt-2 max-w-lg text-sm leading-6 text-muted">Completing this course supports three of your top five job matches and closes your biggest analytics gap.</p><div className="mt-5 flex items-center gap-4"><button onClick={() => notify("Course resumed at lesson 7.")} className="btn-accent"><Play size={15} fill="currentColor" /> Continue learning</button><span className="text-xs font-bold text-muted">32 min left</span></div></div>
         <div className="relative hidden place-items-center bg-[#DED2BE] md:grid"><div className="grid h-36 w-36 place-items-center rounded-full border-[20px] border-cobalt bg-white/50"><span className="text-center"><b className="block text-2xl">68%</b><small className="text-[10px] font-bold text-muted">complete</small></span></div></div>
       </section>
       <div className="flex flex-wrap gap-2">{["All resources", "Career Toolkit", "Data & Analytics", "Development", "Communication"].map((item) => <button key={item} onClick={() => setCategory(item)} className={`min-h-9 rounded-xl px-3 text-xs font-bold ${category === item ? "bg-ink text-white" : "bg-white/60 text-muted"}`}>{item}</button>)}</div>
@@ -1763,7 +1762,7 @@ function LegacyCommunityPage({ posts, setPosts, notify, viewer, onNewPost }) {
       </section>
       <aside className="space-y-5">
         <div className="panel p-5"><div className="flex items-center justify-between"><h2 className="font-extrabold">Trending circles</h2><Users size={17} className="text-muted" /></div><div className="mt-4 space-y-3">{[["Data Career Circle", "1.2k members", "bg-cobalt"], ["Fresh Graduate Network", "884 members", "bg-coral"], ["Women in Product BD", "620 members", "bg-jade"]].map(([name, count, tone]) => <div className="flex items-center gap-3" key={name}><span className={`grid h-9 w-9 place-items-center rounded-xl text-xs font-bold text-white ${tone}`}>{name[0]}</span><span className="flex-1"><b className="block text-xs">{name}</b><small className="text-[10px] text-muted">{count}</small></span><button className="text-xs font-bold text-cobalt">Join</button></div>)}</div></div>
-        <div className="overflow-hidden rounded-[28px] bg-cobalt p-6 text-white"><Sparkles size={20} /><h2 className="mt-5 text-xl font-extrabold">Community challenge</h2><p className="mt-2 text-sm leading-6 text-white/65">Share one lesson from your latest assessment by Friday.</p><div className="mt-5 flex items-center justify-between text-xs"><b>84 joined</b><ArrowRight size={16} /></div></div>
+        <div className="overflow-hidden rounded-[28px] bg-cobalt p-6 text-white"><Trophy size={20} /><h2 className="mt-5 text-xl font-extrabold">Community challenge</h2><p className="mt-2 text-sm leading-6 text-white/65">Share one lesson from your latest assessment by Friday.</p><div className="mt-5 flex items-center justify-between text-xs"><b>84 joined</b><ArrowRight size={16} /></div></div>
       </aside>
     </div>
   );
@@ -2181,7 +2180,7 @@ function ApplyModal({ job, user, resumeName, coverLetterEnabled, coverLetterTone
     setSaving(false);
   };
   return (
-    <div className="modal-backdrop" onClick={onClose}><div className="modal-card" onClick={(e) => e.stopPropagation()}><div className="flex items-center justify-between"><div><span className="eyebrow"><Sparkles size={13} /> Smart application</span><h2 className="mt-2 text-xl font-extrabold">{job.title} · {job.company}</h2></div><button onClick={onClose} className="btn-ghost"><X size={18} /></button></div><div className="mt-6 space-y-4"><div className="rounded-2xl border border-ink/[0.08] bg-white/55 p-4"><div className="flex items-center justify-between"><span><b className="block text-sm">{resumeFile?.name || resumeFileName}</b><small className="text-muted">{resumeFile ? "Uploaded resume file" : "Career Vault snapshot · captured when you apply"}</small></span><span className="tag !text-jade"><Check size={12} /> {resumeFile ? "Uploaded" : "Selected"}</span></div></div><label className="flex cursor-pointer items-center justify-center gap-2 rounded-2xl border border-dashed border-ink/20 bg-white/35 p-5 text-xs font-bold text-muted hover:bg-white/60"><Upload size={17} /> {resumeFile ? "Replace uploaded resume" : "Upload a different resume"}<input className="hidden" type="file" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onChange={selectResumeFile} /></label>{fileError && <p className="rounded-xl bg-coral/10 px-3 py-2 text-xs font-bold text-coral">{fileError}</p>}<div><div className="mb-2 flex items-center justify-between"><b className="text-xs">Cover letter</b>{coverLetterEnabled && <button onClick={generate} className="text-xs font-bold text-cobalt"><Sparkles size={13} className="mr-1 inline" />Generate · {coverLetterTone}</button>}</div><textarea className="input min-h-40 resize-none py-3" value={coverLetter} onChange={(event) => setCoverLetter(event.target.value)} placeholder={coverLetterEnabled ? "Write your note or generate a tailored draft..." : "Write your cover letter..."} /></div></div><div className="mt-6 flex justify-end gap-3"><button onClick={onClose} className="btn-secondary">Save draft</button><button disabled={saving} onClick={submit} className="btn-accent disabled:opacity-50">{saving ? "Submitting..." : "Submit application"} <Send size={15} /></button></div></div></div>
+    <div className="modal-backdrop" onClick={onClose}><div className="modal-card" onClick={(e) => e.stopPropagation()}><div className="flex items-center justify-between"><div><span className="eyebrow"><FileText size={13} /> Smart application</span><h2 className="mt-2 text-xl font-extrabold">{job.title} · {job.company}</h2></div><button onClick={onClose} className="btn-ghost"><X size={18} /></button></div><div className="mt-6 space-y-4"><div className="rounded-2xl border border-ink/[0.08] bg-white/55 p-4"><div className="flex items-center justify-between"><span><b className="block text-sm">{resumeFile?.name || resumeFileName}</b><small className="text-muted">{resumeFile ? "Uploaded resume file" : "Career Vault snapshot · captured when you apply"}</small></span><span className="tag !text-jade"><Check size={12} /> {resumeFile ? "Uploaded" : "Selected"}</span></div></div><label className="flex cursor-pointer items-center justify-center gap-2 rounded-2xl border border-dashed border-ink/20 bg-white/35 p-5 text-xs font-bold text-muted hover:bg-white/60"><Upload size={17} /> {resumeFile ? "Replace uploaded resume" : "Upload a different resume"}<input className="hidden" type="file" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onChange={selectResumeFile} /></label>{fileError && <p className="rounded-xl bg-coral/10 px-3 py-2 text-xs font-bold text-coral">{fileError}</p>}<div><div className="mb-2 flex items-center justify-between"><b className="text-xs">Cover letter</b>{coverLetterEnabled && <button onClick={generate} className="text-xs font-bold text-cobalt"><Zap size={13} className="mr-1 inline" />Generate · {coverLetterTone}</button>}</div><textarea className="input min-h-40 resize-none py-3" value={coverLetter} onChange={(event) => setCoverLetter(event.target.value)} placeholder={coverLetterEnabled ? "Write your note or generate a tailored draft..." : "Write your cover letter..."} /></div></div><div className="mt-6 flex justify-end gap-3"><button onClick={onClose} className="btn-secondary">Save draft</button><button disabled={saving} onClick={submit} className="btn-accent disabled:opacity-50">{saving ? "Submitting..." : "Submit application"} <Send size={15} /></button></div></div></div>
   );
 }
 
@@ -2193,7 +2192,7 @@ function AdaptiveLoadingModal({ level }) {
   return (
     <div className="modal-backdrop">
       <div className="modal-card max-w-lg text-center">
-        <span className="mx-auto grid h-16 w-16 place-items-center rounded-[22px] bg-cobalt text-white shadow-lift"><Sparkles className="animate-pulse" size={27} /></span>
+        <span className="mx-auto grid h-16 w-16 place-items-center rounded-[22px] bg-cobalt text-white shadow-lift"><RefreshCw className="animate-spin" size={27} /></span>
         <h2 className="mt-5 text-xl font-extrabold">Generating level {level}</h2>
         <p className="mx-auto mt-2 max-w-sm text-xs leading-5 text-muted">Gemini is creating six unique questions from your degree, target role and career interests. This can take a few seconds.</p>
         <p className="mt-6 text-[10px] font-bold uppercase tracking-wider text-muted">Please keep this window open</p>
@@ -2277,7 +2276,7 @@ function AdaptiveQuizModal({ attempt, onClose, onFinished, notify }) {
     <div className="modal-backdrop">
       <div className="modal-card max-w-3xl">
         <div className="flex items-center justify-between gap-4">
-          <div><span className="eyebrow"><Sparkles size={12} /> AI adaptive · {attempt.difficulty}</span><h2 className="mt-1 text-lg font-extrabold">Level {attempt.level} skill assessment</h2></div>
+          <div><span className="eyebrow"><Target size={12} /> AI adaptive · {attempt.difficulty}</span><h2 className="mt-1 text-lg font-extrabold">Level {attempt.level} skill assessment</h2></div>
           <div className={`flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold ${secondsLeft < 60 ? "bg-coral text-white" : "bg-coral/10 text-coral"}`}><Clock3 size={15} /> {minutes}:{seconds}</div>
         </div>
         <div className="mt-6 flex gap-1.5">{questions.map((item, questionIndex) => <span key={item.id} className={`h-1.5 flex-1 rounded-full ${questionIndex <= index ? "bg-cobalt" : "bg-ink/[0.08]"}`} />)}</div>

@@ -1,7 +1,7 @@
 import { Link } from "../lib/router";
 import {
-  ArrowDown, ArrowUpRight, BookOpen, Check, CheckCheck, FileText,
-  GraduationCap, Layers3, MessageCircle, Plus, ShieldCheck, Sparkles, Target, Users,
+  ArrowDown, ArrowUpRight, BookOpen, Check, CheckCheck, Compass, FileText, Flag,
+  GraduationCap, Layers3, MessageCircle, Plus, ShieldCheck, Target, TrendingUp, Users,
 } from "lucide-react";
 import { PublicFooter, PublicHeader } from "./public/PublicChrome";
 import "../src/landing.css";
@@ -46,7 +46,7 @@ export default function LandingPage() {
               <img className="landing-graduation-photo" src="/careercube-hero-graduation-light.jpg" width="1920" height="1280" fetchPriority="high" decoding="async" alt="Five university graduates sitting together on the campus lawn in their graduation gowns" />
               <figcaption className="landing-photo-caption"><span>Big dreams.<br /><em>Real beginnings.</em></span><span className="landing-photo-arrow" aria-hidden="true"><ArrowUpRight size={28} strokeWidth={1.5} /></span></figcaption>
             </figure>
-            <div className="landing-chapter-note"><span className="landing-chapter-icon"><Sparkles size={18} /></span><div><strong>Potential, meet possibility.</strong><span>Your next chapter deserves a little direction.</span></div></div>
+            <div className="landing-chapter-note"><span className="landing-chapter-icon"><Compass size={18} /></span><div><strong>Potential, meet possibility.</strong><span>Your next chapter deserves a little direction.</span></div></div>
             <div className="landing-photo-footnote"><span>FROM CAMPUS TO WHAT’S NEXT</span><span>01 / YOUR JOURNEY</span></div>
           </div>
         </section>
@@ -75,12 +75,12 @@ export default function LandingPage() {
               <Link to="/login/student?mode=register" className="landing-feature-link">Explore your possibilities <ArrowUpRight size={18} /></Link>
             </article>
             <article className="landing-feature landing-feature-skills">
-              <span className="landing-feature-kicker"><Sparkles size={17} /> CONFIDENCE THROUGH PRACTICE</span>
+              <span className="landing-feature-kicker"><TrendingUp size={17} /> CONFIDENCE THROUGH PRACTICE</span>
               <h3>Small steps.<br /><em>Stronger you.</em></h3>
               <p>Adaptive assessments help you understand your strengths and make your next learning step clear.</p>
               <div className="landing-skill-preview">
                 <div><span>Your assessment journey</span><strong>10 levels</strong></div>
-                <div className="landing-levels" aria-hidden="true">{Array.from({ length: 10 }, (_, i) => <span key={i} style={{ "--level": i }}>{i === 9 ? <Sparkles size={13} /> : null}</span>)}</div>
+                <div className="landing-levels" aria-hidden="true">{Array.from({ length: 10 }, (_, i) => <span key={i} style={{ "--level": i }}>{i === 9 ? <Flag size={13} /> : null}</span>)}</div>
                 <small>From foundations to what comes next.</small>
               </div>
               <Link to="/login/student?mode=register" className="landing-feature-link">Discover your strengths <ArrowUpRight size={18} /></Link>

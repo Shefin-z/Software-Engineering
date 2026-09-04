@@ -6,10 +6,10 @@ import {
   Check,
   Eye,
   EyeOff,
+  GraduationCap,
   LockKeyhole,
   Mail,
   ShieldCheck,
-  Sparkles,
   User,
 } from "lucide-react";
 import Brand from "./Brand";
@@ -350,7 +350,7 @@ export default function AuthExperience({ role = "student" }) {
           </div>
           <div className="auth-story-card absolute bottom-8 left-8 right-8 rounded-[28px] border border-white/60 bg-white/75 p-7 shadow-glass backdrop-blur-2xl">
             <div className="eyebrow mb-4 !text-ink">
-              {isAdmin ? <ShieldCheck size={14} /> : <Sparkles size={14} />}
+              {isAdmin ? <ShieldCheck size={14} /> : <GraduationCap size={14} />}
               {isAdmin ? "Secure operations portal" : "Your guided career workspace"}
             </div>
             <h1 className="font-display text-4xl leading-[1.03] tracking-[-0.045em]">

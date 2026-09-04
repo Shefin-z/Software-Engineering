@@ -6,7 +6,6 @@ import {
   Heart,
   MessageCircle,
   ShieldCheck,
-  Sparkles,
   Trophy,
   Users,
 } from "lucide-react";
@@ -72,7 +71,7 @@ export default function CommunityLandingPage() {
               <div className="mt-5 flex gap-4 text-xs font-bold text-muted"><span className="flex items-center gap-1.5"><Heart size={14} /> 48</span><span className="flex items-center gap-1.5"><MessageCircle size={14} /> 9</span></div>
             </article>
             <div className="glass absolute bottom-7 left-7 z-10 rounded-[24px] p-5 sm:w-[330px]">
-              <span className="eyebrow"><Sparkles size={13} /> Live circle</span>
+              <span className="eyebrow"><Users size={13} /> Live circle</span>
               <h2 className="mt-3 text-xl font-extrabold">SQL practice · Saturday</h2>
               <p className="mt-2 text-sm leading-6 text-muted">12 students from 7 universities are joining.</p>
               <div className="mt-4 flex -space-x-2">
@@ -95,7 +94,7 @@ export default function CommunityLandingPage() {
 
       <section className="page-shell py-20 sm:py-28">
         <div className="grid gap-8 lg:grid-cols-[.8fr_1.2fr] lg:items-end">
-          <div><div className="eyebrow mb-5"><Sparkles size={14} /> Find your people</div><h2 className="section-title">Connection with<br /><i className="text-coral">career direction.</i></h2></div>
+          <div><div className="eyebrow mb-5"><Users size={14} /> Find your people</div><h2 className="section-title">Connection with<br /><i className="text-coral">career direction.</i></h2></div>
           <p className="max-w-2xl text-base leading-7 text-muted lg:justify-self-end">Every space is designed around useful action—learning a skill, preparing for an opportunity or sharing experience that helps someone else move faster.</p>
         </div>
         <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

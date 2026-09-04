@@ -36,7 +36,6 @@ import {
   Send,
   Settings,
   ShieldCheck,
-  Sparkles,
   Trash2,
   TrendingUp,
   UserCheck,
@@ -907,7 +906,7 @@ function SettingsAdmin({ notify }) {
     ["security", "Security", ShieldCheck],
     ["email", "Email templates", Mail],
     ["integrations", "Integrations", Database],
-    ["ai", "AI configuration", Sparkles],
+    ["ai", "AI configuration", Zap],
   ];
   const [tab, setTab] = useState("general");
   const [settings, setSettings] = useState(null);
