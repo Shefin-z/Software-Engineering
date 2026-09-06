@@ -156,39 +156,170 @@ function geminiConfigured() {
   return Boolean(configuredApiKey());
 }
 
+function fallbackContext(profile, levelNumber) {
+  const level = LEVEL_CONFIG[levelNumber - 1];
+  if (!level) throw new Error("Invalid assessment level");
+
+  const role = cleanText(profile?.target_role || profile?.targetRole, 120) || "your target role";
+  const degree = cleanText(profile?.degree, 120) || "your field of study";
+  const interests = normalizeInterests(profile?.career_interests || profile?.careerInterests);
+  return {
+    level,
+    role,
+    degree,
+    interest: interests[0] || "your career interests",
+  };
+}
+
+function generateFallbackQuestions({ profile, levelNumber }) {
+  const { level, role, degree, interest } = fallbackContext(profile, levelNumber);
+  const levelNote = `This is level ${level.level} (${level.label}), focused on ${level.focus}.`;
+  const questions = [
+    {
+      prompt: `Before starting a ${role} task related to ${interest}, what is the best first step?`,
+      options: [
+        "Clarify the goal, constraints, success criteria, and available evidence",
+        "Choose a solution based only on the first idea",
+        "Start implementation before talking to anyone",
+        "Copy an unrelated past solution without review",
+      ],
+      correctIndex: 0,
+      explanation: "Strong work starts with a clear problem definition so the solution can be evaluated against real needs.",
+      focusArea: "Problem framing",
+    },
+    {
+      prompt: `You receive information for a ${degree} project, but some values look incomplete. What should you do before using it to make a decision?`,
+      options: [
+        "Check the source, completeness, and consistency of the information",
+        "Treat every value as correct because it is already available",
+        "Delete all records and begin without evidence",
+        "Choose only the values that support the preferred conclusion",
+      ],
+      correctIndex: 0,
+      explanation: "Validating information quality reduces avoidable mistakes and makes decisions more reliable.",
+      focusArea: "Evidence quality",
+    },
+    {
+      prompt: `While working with others on a ${role} deliverable, which practice best keeps the team aligned?`,
+      options: [
+        "Record decisions, share progress, and make changes traceable",
+        "Keep changes private until the final deadline",
+        "Let each person use a different goal without discussion",
+        "Avoid asking for feedback to save time",
+      ],
+      correctIndex: 0,
+      explanation: "Visible decisions and traceable changes help a team coordinate, review work, and recover from mistakes.",
+      focusArea: "Collaboration",
+    },
+    {
+      prompt: `A proposed solution for ${interest} appears to work once. What is the most responsible next step?`,
+      options: [
+        "Test it against the agreed success criteria and realistic edge cases",
+        "Assume one successful attempt proves it will always work",
+        "Release it without checking the expected outcome",
+        "Change the success criteria after seeing the result",
+      ],
+      correctIndex: 0,
+      explanation: "Testing against agreed criteria and edge cases shows whether a solution is dependable beyond a single example.",
+      focusArea: "Quality assurance",
+    },
+    {
+      prompt: `A stakeholder asks you to include private student or customer information in a ${role} report. What should you do?`,
+      options: [
+        "Use only authorized, necessary data and protect identities where possible",
+        "Include every personal detail to make the report more convincing",
+        "Share the data in a public channel for faster feedback",
+        "Ignore privacy requirements when a deadline is close",
+      ],
+      correctIndex: 0,
+      explanation: "Professional work respects privacy, uses the minimum necessary data, and follows authorization requirements.",
+      focusArea: "Ethics and privacy",
+    },
+    {
+      prompt: `After completing a ${role} task, what should a useful update to stakeholders include?`,
+      options: [
+        "The outcome, supporting evidence, limitations, and recommended next step",
+        "Only a claim that the work is finished",
+        "Technical details without explaining their impact",
+        "A promise of results without any evidence",
+      ],
+      correctIndex: 0,
+      explanation: "A concise evidence-based update helps stakeholders understand what changed, what remains uncertain, and what to do next.",
+      focusArea: "Professional communication",
+    },
+  ].map((question, index) => ({
+    ...question,
+    id: `q${index + 1}`,
+    explanation: `${question.explanation} ${levelNote}`,
+  }));
+
+  return normalizeGeneratedQuestions({ questions });
+}
+
+function providerErrorSummary(cause) {
+  return {
+    status: Number(cause?.status || cause?.statusCode || cause?.response?.status) || null,
+    code: String(cause?.code || cause?.name || "provider_error"),
+    message: cleanText(cause?.message, 220) || "Unknown Gemini provider error",
+  };
+}
+
+function wait(milliseconds) {
+  return new Promise((resolve) => setTimeout(resolve, milliseconds));
+}
+
 async function generateAssessmentQuestions({ profile, levelNumber, previousPrompts = [] }) {
   const apiKey = configuredApiKey();
   if (!apiKey) {
-    const error = new Error("Gemini is not configured yet. Add GEMINI_API_KEY to the server environment.");
-    error.statusCode = 503;
-    throw error;
+    console.warn("Adaptive assessment is using the resilient question set because Gemini is not configured.");
+    return {
+      model: "careercube-resilient-question-set-v1",
+      questions: generateFallbackQuestions({ profile, levelNumber }),
+    };
   }
 
   const model = String(process.env.GEMINI_MODEL || "gemini-3.6-flash").trim();
   const ai = new GoogleGenAI({ apiKey });
-  try {
-    const response = await ai.models.generateContent({
-      model,
-      contents: buildAssessmentPrompt(profile, levelNumber, previousPrompts),
-      config: {
-        temperature: 0.35,
-        maxOutputTokens: 4096,
-        responseMimeType: "application/json",
-        responseJsonSchema: QUESTION_SCHEMA,
-      },
-    });
-    const text = response.text;
-    if (!text) throw new Error("Gemini returned an empty response");
-    return {
-      model: response.modelVersion || model,
-      questions: normalizeGeneratedQuestions(JSON.parse(text)),
-    };
-  } catch (cause) {
-    const error = new Error("Could not generate this assessment right now. Please try again.");
-    error.statusCode = 503;
-    error.cause = cause;
-    throw error;
+  const prompt = buildAssessmentPrompt(profile, levelNumber, previousPrompts);
+  let lastError;
+
+  for (let attempt = 1; attempt <= 2; attempt += 1) {
+    try {
+      const response = await ai.models.generateContent({
+        model,
+        contents: prompt,
+        config: {
+          temperature: 0.35,
+          maxOutputTokens: 4096,
+          responseMimeType: "application/json",
+          responseJsonSchema: QUESTION_SCHEMA,
+        },
+      });
+      const text = response.text;
+      if (!text) throw new Error("Gemini returned an empty response");
+      return {
+        model: response.modelVersion || model,
+        questions: normalizeGeneratedQuestions(JSON.parse(text)),
+      };
+    } catch (cause) {
+      lastError = cause;
+      console.warn("Adaptive Gemini generation attempt failed", {
+        attempt,
+        model,
+        ...providerErrorSummary(cause),
+      });
+      if (attempt < 2) await wait(350 * attempt);
+    }
   }
+
+  console.warn("Adaptive assessment is using the resilient question set after Gemini retries failed", {
+    model,
+    ...providerErrorSummary(lastError),
+  });
+  return {
+    model: "careercube-resilient-question-set-v1",
+    questions: generateFallbackQuestions({ profile, levelNumber }),
+  };
 }
 
 module.exports = {
@@ -199,5 +330,6 @@ module.exports = {
   sanitiseQuestionsForClient,
   gradeAssessmentQuestions,
   geminiConfigured,
+  generateFallbackQuestions,
   generateAssessmentQuestions,
 };

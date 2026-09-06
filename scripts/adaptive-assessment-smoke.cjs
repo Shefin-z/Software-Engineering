@@ -2,6 +2,8 @@ const assert = require("node:assert/strict");
 const {
   LEVEL_CONFIG,
   buildAssessmentPrompt,
+  generateFallbackQuestions,
+  generateAssessmentQuestions,
   normalizeGeneratedQuestions,
   sanitiseQuestionsForClient,
   gradeAssessmentQuestions,
@@ -23,6 +25,13 @@ assert.match(prompt, /BSc in CSE/);
 assert.match(prompt, /Software Engineer/);
 assert.match(prompt, /Backend Engineering, Cloud/);
 assert.doesNotMatch(prompt, /Private Name|private@example\.com/);
+
+const fallbackQuestions = generateFallbackQuestions({ profile, levelNumber: 5 });
+assert.equal(fallbackQuestions.length, 6);
+assert.equal(new Set(fallbackQuestions.map((question) => question.prompt)).size, 6);
+assert.ok(fallbackQuestions.every((question) => question.options.length === 4));
+assert.ok(fallbackQuestions.every((question) => Number.isInteger(question.correctIndex)));
+assert.match(fallbackQuestions[0].prompt, /Software Engineer/);
 
 const questions = normalizeGeneratedQuestions({
   questions: Array.from({ length: 6 }, (_, index) => ({
@@ -47,4 +56,26 @@ const grade = gradeAssessmentQuestions(questions, [
 assert.equal(grade.correctCount, 2);
 assert.equal(grade.review[2].selectedIndex, null);
 
-console.log("Adaptive assessment smoke test passed.");
+async function verifyResilientGeneration() {
+  const originalGeminiKey = process.env.GEMINI_API_KEY;
+  const originalGoogleKey = process.env.GOOGLE_API_KEY;
+  delete process.env.GEMINI_API_KEY;
+  delete process.env.GOOGLE_API_KEY;
+  try {
+    const generation = await generateAssessmentQuestions({ profile, levelNumber: 1 });
+    assert.equal(generation.model, "careercube-resilient-question-set-v1");
+    assert.equal(generation.questions.length, 6);
+  } finally {
+    if (originalGeminiKey == null) delete process.env.GEMINI_API_KEY;
+    else process.env.GEMINI_API_KEY = originalGeminiKey;
+    if (originalGoogleKey == null) delete process.env.GOOGLE_API_KEY;
+    else process.env.GOOGLE_API_KEY = originalGoogleKey;
+  }
+}
+
+verifyResilientGeneration()
+  .then(() => console.log("Adaptive assessment smoke test passed."))
+  .catch((error) => {
+    console.error(error);
+    process.exitCode = 1;
+  });
