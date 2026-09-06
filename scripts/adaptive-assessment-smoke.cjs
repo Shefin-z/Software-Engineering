@@ -9,9 +9,9 @@ const {
   gradeAssessmentQuestions,
 } = require("../server/src/services/gemini-assessment");
 
-assert.equal(LEVEL_CONFIG.length, 10);
+assert.equal(LEVEL_CONFIG.length, 50);
 assert.equal(LEVEL_CONFIG[0].difficulty, "Easy");
-assert.equal(LEVEL_CONFIG[9].difficulty, "Expert");
+assert.equal(LEVEL_CONFIG[49].difficulty, "Expert");
 
 const profile = {
   degree: "BSc in CSE",
@@ -24,6 +24,7 @@ const prompt = buildAssessmentPrompt(profile, 5);
 assert.match(prompt, /BSc in CSE/);
 assert.match(prompt, /Software Engineer/);
 assert.match(prompt, /Backend Engineering, Cloud/);
+assert.match(prompt, /Level: 5 of 50/);
 assert.doesNotMatch(prompt, /Private Name|private@example\.com/);
 
 const fallbackQuestions = generateFallbackQuestions({ profile, levelNumber: 5 });

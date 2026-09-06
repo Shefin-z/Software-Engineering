@@ -41,6 +41,11 @@ async function buildAdaptiveAssessmentSchema() {
       INDEX idx_adaptive_attempt_status_expiry (status, expires_at)
     )`,
   );
+  await query(
+    `UPDATE adaptive_assessment_programs
+     SET current_level=11, status='active', completed_at=NULL
+     WHERE status='completed' AND current_level<=10 AND highest_level_completed<=10`,
+  );
 }
 
 async function ensureAdaptiveAssessmentSchema() {

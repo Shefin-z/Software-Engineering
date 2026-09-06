@@ -1,17 +1,26 @@
 const { GoogleGenAI } = require("@google/genai");
 
-const LEVEL_CONFIG = Object.freeze([
-  { level: 1, label: "Foundation", difficulty: "Easy", focus: "essential vocabulary and first principles" },
-  { level: 2, label: "Core concepts", difficulty: "Easy", focus: "basic concepts and direct application" },
-  { level: 3, label: "Applied basics", difficulty: "Easy to medium", focus: "small practical scenarios" },
-  { level: 4, label: "Developing", difficulty: "Developing", focus: "connected concepts and common trade-offs" },
-  { level: 5, label: "Intermediate", difficulty: "Intermediate", focus: "practical problem solving" },
-  { level: 6, label: "Proficient", difficulty: "Intermediate plus", focus: "multi-step reasoning and professional practice" },
-  { level: 7, label: "Challenging", difficulty: "Challenging", focus: "edge cases and nuanced decisions" },
-  { level: 8, label: "Advanced", difficulty: "Advanced", focus: "architecture, evaluation and complex scenarios" },
-  { level: 9, label: "Hard", difficulty: "Hard", focus: "deep technical judgment and difficult trade-offs" },
-  { level: 10, label: "Expert", difficulty: "Expert", focus: "expert synthesis, ambiguity and high-impact decisions" },
+const LEVEL_STAGES = Object.freeze([
+  { label: "Foundation", difficulty: "Easy", focus: "essential vocabulary and first principles" },
+  { label: "Core concepts", difficulty: "Easy", focus: "basic concepts and direct application" },
+  { label: "Applied basics", difficulty: "Easy to medium", focus: "small practical scenarios" },
+  { label: "Developing", difficulty: "Developing", focus: "connected concepts and common trade-offs" },
+  { label: "Intermediate", difficulty: "Intermediate", focus: "practical problem solving" },
+  { label: "Proficient", difficulty: "Intermediate plus", focus: "multi-step reasoning and professional practice" },
+  { label: "Challenging", difficulty: "Challenging", focus: "edge cases and nuanced decisions" },
+  { label: "Advanced", difficulty: "Advanced", focus: "architecture, evaluation and complex scenarios" },
+  { label: "Hard", difficulty: "Hard", focus: "deep technical judgment and difficult trade-offs" },
+  { label: "Expert", difficulty: "Expert", focus: "expert synthesis, ambiguity and high-impact decisions" },
 ]);
+
+const LEVELS_PER_STAGE = 5;
+const LEVEL_CONFIG = Object.freeze(LEVEL_STAGES.flatMap((stage, stageIndex) =>
+  Array.from({ length: LEVELS_PER_STAGE }, (_, levelIndex) => ({
+    level: (stageIndex * LEVELS_PER_STAGE) + levelIndex + 1,
+    ...stage,
+  })),
+));
+const MAX_LEVEL = LEVEL_CONFIG.length;
 
 const QUESTION_SCHEMA = {
   type: "object",
@@ -72,7 +81,7 @@ function buildAssessmentPrompt(profile, levelNumber, previousPrompts = []) {
     `Student degree: ${degree}`,
     `Target role: ${targetRole}`,
     `Career interests: ${interests.join(", ")}`,
-    `Level: ${level.level} of 10 (${level.label})`,
+    `Level: ${level.level} of ${MAX_LEVEL} (${level.label})`,
     `Difficulty: ${level.difficulty}`,
     `Focus: ${level.focus}`,
     "Every question must assess knowledge or applied judgment relevant to this exact degree, target role and interests.",
@@ -324,6 +333,7 @@ async function generateAssessmentQuestions({ profile, levelNumber, previousPromp
 
 module.exports = {
   LEVEL_CONFIG,
+  MAX_LEVEL,
   QUESTION_SCHEMA,
   buildAssessmentPrompt,
   normalizeGeneratedQuestions,

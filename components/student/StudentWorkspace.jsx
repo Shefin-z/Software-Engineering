@@ -1502,10 +1502,11 @@ function AssessmentsPage({
   const program = adaptive?.program;
   const currentLevel = program?.currentLevel || 1;
   const accuracy = program?.totalQuestions ? Math.round((program.totalCorrect / program.totalQuestions) * 100) : 0;
-  const fallbackLevels = Array.from({ length: 10 }, (_, index) => ({
+  const levelStages = ["Foundation", "Core concepts", "Applied basics", "Developing", "Intermediate", "Proficient", "Challenging", "Advanced", "Hard", "Expert"];
+  const fallbackLevels = Array.from({ length: 50 }, (_, index) => ({
     level: index + 1,
-    label: `Level ${index + 1}`,
-    difficulty: index < 3 ? "Easy" : index < 7 ? "Intermediate" : "Hard",
+    label: levelStages[Math.floor(index / 5)],
+    difficulty: index < 10 ? "Easy" : index < 25 ? "Intermediate" : index < 40 ? "Advanced" : "Expert",
     state: index === 0 ? "unlocked" : "locked",
   }));
 
@@ -1516,7 +1517,7 @@ function AssessmentsPage({
           <div>
             <span className="eyebrow !text-[#AFC0FF]"><Target size={13} /> Gemini adaptive journey</span>
             <h2 className="mt-3 text-3xl font-extrabold tracking-[-0.045em]">
-              {program?.status === "completed" ? "All 10 levels completed." : `Level ${currentLevel}: ${program?.levels?.[currentLevel - 1]?.label || "Foundation"}`}
+              {program?.status === "completed" ? "All 50 levels completed." : `Level ${currentLevel}: ${program?.levels?.[currentLevel - 1]?.label || "Foundation"}`}
             </h2>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-white/60">
               Six fresh questions are generated from your degree, target role and career interests. Score at least 4/6 to unlock the next level.
@@ -1530,8 +1531,6 @@ function AssessmentsPage({
                 <p className="text-xs font-bold text-[#FFD1C5]">Required first: {(adaptive?.missingFields || []).join(", ") || "personal and career details"}</p>
                 <button onClick={onCompleteProfile} className="clay-hero-button btn-accent mt-3">Complete career profile <ArrowRight size={15} /></button>
               </div>
-            ) : !adaptive?.aiConfigured ? (
-              <div className="mt-5 rounded-2xl border border-coral/30 bg-coral/10 p-4 text-xs leading-5 text-[#FFD1C5]">The feature is implemented, but the server needs a private <b>GEMINI_API_KEY</b> environment variable before it can generate real questions.</div>
             ) : program?.status === "completed" ? (
               <div className="mt-5 inline-flex items-center gap-2 rounded-xl bg-jade/15 px-4 py-3 text-xs font-bold text-[#BEE8D5]"><Trophy size={16} /> Expert journey completed</div>
             ) : (
@@ -1541,7 +1540,7 @@ function AssessmentsPage({
             )}
           </div>
           <div className="grid grid-cols-3 gap-3 lg:w-80">
-            <div className="clay-accent-stat rounded-2xl bg-white/10 p-4"><b className="block text-2xl">{program?.highestLevelCompleted || 0}/10</b><small className="text-[10px] font-bold uppercase tracking-wider text-white/50">Levels</small></div>
+            <div className="clay-accent-stat rounded-2xl bg-white/10 p-4"><b className="block text-2xl">{program?.highestLevelCompleted || 0}/50</b><small className="text-[10px] font-bold uppercase tracking-wider text-white/50">Levels</small></div>
             <div className="clay-accent-stat rounded-2xl bg-white/10 p-4"><b className="block text-2xl">{accuracy}%</b><small className="text-[10px] font-bold uppercase tracking-wider text-white/50">Accuracy</small></div>
             <div className="clay-accent-stat rounded-2xl bg-white/10 p-4"><b className="block text-2xl">12m</b><small className="text-[10px] font-bold uppercase tracking-wider text-white/50">Per level</small></div>
           </div>
@@ -1549,7 +1548,7 @@ function AssessmentsPage({
       </section>
 
       <section className="panel p-6">
-        <div className="flex flex-wrap items-end justify-between gap-3"><div><span className="eyebrow"><Target size={13} /> Progressive difficulty</span><h2 className="mt-2 text-xl font-extrabold">Your 10-level skill map</h2></div><p className="text-xs font-semibold text-muted">60 questions total · pass 4 of 6 per level</p></div>
+        <div className="flex flex-wrap items-end justify-between gap-3"><div><span className="eyebrow"><Target size={13} /> Progressive difficulty</span><h2 className="mt-2 text-xl font-extrabold">Your 50-level skill map</h2></div><p className="text-xs font-semibold text-muted">300 questions total · pass 4 of 6 per level</p></div>
         <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
           {(program?.levels || fallbackLevels).map((level) => (
             <article key={level.level} className={`rounded-[22px] border p-4 transition ${level.state === "completed" ? "border-jade/25 bg-jade/10" : level.state === "unlocked" ? "border-cobalt/30 bg-cobalt/10 shadow-lift" : "border-ink/[0.07] bg-white/35 opacity-65"}`}>
@@ -2251,7 +2250,7 @@ function AdaptiveQuizModal({ attempt, onClose, onFinished, notify }) {
             <span className={`mx-auto grid h-20 w-20 place-items-center rounded-full text-white shadow-lift ${result.passed ? "bg-jade" : "bg-coral"}`}>{result.passed ? <Trophy size={32} /> : <Target size={32} />}</span>
             <span className="eyebrow mt-5">Level {result.level} complete</span>
             <h2 className="mt-2 font-display text-5xl">{result.correctCount}/6</h2>
-            <p className="mx-auto mt-3 max-w-lg text-sm leading-6 text-muted">{result.passed ? (result.nextLevel ? `Great work. Level ${result.nextLevel} is now unlocked.` : "You completed the full 10-level expert journey.") : "You need 4 correct answers to advance. Review the explanations and try this level again."}</p>
+            <p className="mx-auto mt-3 max-w-lg text-sm leading-6 text-muted">{result.passed ? (result.nextLevel ? `Great work. Level ${result.nextLevel} is now unlocked.` : "You completed the full 50-level expert journey.") : "You need 4 correct answers to advance. Review the explanations and try this level again."}</p>
           </div>
           <div className="mt-7 space-y-3">
             {result.review.map((item, reviewIndex) => (

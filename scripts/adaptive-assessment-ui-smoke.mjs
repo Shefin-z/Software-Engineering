@@ -20,7 +20,7 @@ window.localStorage.setItem("careerforge_token", "runtime-test-token");
 window.localStorage.setItem("careerforge_session", JSON.stringify(user));
 window.localStorage.setItem(`careerforge_student_section_${user.id}`, "assessments");
 
-const levels = Array.from({ length: 10 }, (_, index) => ({
+const levels = Array.from({ length: 50 }, (_, index) => ({
   level: index + 1,
   label: index === 0 ? "Foundation" : `Level ${index + 1}`,
   difficulty: index < 3 ? "Easy" : index < 7 ? "Intermediate" : "Hard",
@@ -122,7 +122,7 @@ await window.happyDOM.waitUntilComplete();
 await new Promise((resolve) => setTimeout(resolve, 200));
 
 const pageText = () => document.getElementById("root")?.textContent?.replace(/\s+/g, " ") || "";
-if (!pageText().includes("Gemini adaptive journey") || !pageText().includes("Your 10-level skill map")) {
+if (!pageText().includes("Gemini adaptive journey") || !pageText().includes("Your 50-level skill map")) {
   throw new Error("The adaptive assessment journey did not render.");
 }
 const startButton = [...document.querySelectorAll("button")].find((button) => button.textContent.includes("Generate level 1"));
@@ -133,5 +133,5 @@ if (!pageText().includes("Level 1 skill assessment") || !pageText().includes("QU
   throw new Error("The generated six-question assessment modal did not open.");
 }
 
-console.log(JSON.stringify({ status: "passed", levelMap: 10, questions: 6 }));
+console.log(JSON.stringify({ status: "passed", levelMap: 50, questions: 6 }));
 await window.happyDOM.close();

@@ -5,6 +5,7 @@ const { ensureAdaptiveAssessmentSchema } = require("../services/adaptive-assessm
 const { ensureJobSchema } = require("../services/job-schema");
 const { ensureProfileSchema } = require("../services/profile-schema");
 const { ensureMatchingSchema } = require("../services/matching-schema");
+const { MAX_LEVEL } = require("../services/gemini-assessment");
 const {
   average,
   calculateProfileCompletion,
@@ -175,7 +176,7 @@ router.get("/overview", async (req, res, next) => {
       nextActions.push({
         id: "adaptive-assessment",
         title: `${program.current_level ? "Continue" : "Start"} adaptive assessment`,
-        detail: `Level ${Number(program.current_level || 1)} of 10`,
+        detail: `Level ${Number(program.current_level || 1)} of ${MAX_LEVEL}`,
         target: "assessments",
         tone: "bg-jade",
       });

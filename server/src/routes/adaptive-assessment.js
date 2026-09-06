@@ -5,6 +5,7 @@ const { authenticate } = require("../middleware/auth");
 const { ensureAdaptiveAssessmentSchema } = require("../services/adaptive-assessment-schema");
 const {
   LEVEL_CONFIG,
+  MAX_LEVEL,
   geminiConfigured,
   generateAssessmentQuestions,
   gradeAssessmentQuestions,
@@ -98,8 +99,8 @@ function clientAttempt(attempt) {
 }
 
 function programPayload(program) {
-  const currentLevel = Math.min(10, Math.max(1, Number(program?.current_level || 1)));
-  const highestCompleted = Math.min(10, Math.max(0, Number(program?.highest_level_completed || 0)));
+  const currentLevel = Math.min(MAX_LEVEL, Math.max(1, Number(program?.current_level || 1)));
+  const highestCompleted = Math.min(MAX_LEVEL, Math.max(0, Number(program?.highest_level_completed || 0)));
   return {
     currentLevel,
     highestLevelCompleted: highestCompleted,
@@ -166,7 +167,7 @@ router.post("/start", async (req, res, next) => {
       return res.status(429).json({ error: "Daily AI assessment limit reached. Try again after 24 hours." });
     }
 
-    const levelNumber = Math.min(10, Math.max(1, Number(program.current_level || 1)));
+    const levelNumber = Math.min(MAX_LEVEL, Math.max(1, Number(program.current_level || 1)));
     const earlierAttempts = await query(
       `SELECT questions_json FROM adaptive_assessment_attempts
        WHERE user_id=? AND level_number=? ORDER BY started_at DESC LIMIT 2`,
@@ -268,12 +269,12 @@ router.post("/attempts/:id/submit", async (req, res, next) => {
          status=IF(status='completed', status, VALUES(status))`,
       [
         req.user.id,
-        passed ? Math.min(10, Number(attempt.level_number) + 1) : Number(attempt.level_number),
+        passed ? Math.min(MAX_LEVEL, Number(attempt.level_number) + 1) : Number(attempt.level_number),
         passed ? Number(attempt.level_number) : Math.max(0, Number(attempt.level_number) - 1),
         QUESTION_COUNT,
         correctCount,
-        passed && Number(attempt.level_number) === 10 ? "completed" : "active",
-        passed && Number(attempt.level_number) === 10 ? new Date() : null,
+        passed && Number(attempt.level_number) === MAX_LEVEL ? "completed" : "active",
+        passed && Number(attempt.level_number) === MAX_LEVEL ? new Date() : null,
       ],
     );
     const program = await getProgram(req.user.id);
@@ -284,7 +285,7 @@ router.post("/attempts/:id/submit", async (req, res, next) => {
         questionCount: QUESTION_COUNT,
         percentage,
         passed,
-        nextLevel: passed && Number(attempt.level_number) < 10 ? Number(attempt.level_number) + 1 : null,
+        nextLevel: passed && Number(attempt.level_number) < MAX_LEVEL ? Number(attempt.level_number) + 1 : null,
         review,
       },
       program: programPayload(program),
