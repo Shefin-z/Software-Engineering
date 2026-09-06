@@ -132,6 +132,9 @@ await new Promise((resolve) => setTimeout(resolve, 200));
 if (!pageText().includes("Level 1 skill assessment") || !pageText().includes("QUESTION 1 OF 6")) {
   throw new Error("The generated six-question assessment modal did not open.");
 }
+if (![...document.querySelectorAll("button")].some((button) => button.getAttribute("aria-label") === "Save progress and close assessment")) {
+  throw new Error("The adaptive assessment close button did not render.");
+}
 
 console.log(JSON.stringify({ status: "passed", levelMap: 50, questions: 6 }));
 await window.happyDOM.close();

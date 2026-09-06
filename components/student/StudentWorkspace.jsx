@@ -2275,7 +2275,7 @@ function AdaptiveQuizModal({ attempt, onClose, onFinished, notify }) {
       <div className="modal-card max-w-3xl">
         <div className="flex items-center justify-between gap-4">
           <div><span className="eyebrow"><Target size={12} /> AI adaptive · {attempt.difficulty}</span><h2 className="mt-1 text-lg font-extrabold">Level {attempt.level} skill assessment</h2></div>
-          <div className={`flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold ${secondsLeft < 60 ? "bg-coral text-white" : "bg-coral/10 text-coral"}`}><Clock3 size={15} /> {minutes}:{seconds}</div>
+          <div className="flex items-center gap-2"><div className={`flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold ${secondsLeft < 60 ? "bg-coral text-white" : "bg-coral/10 text-coral"}`}><Clock3 size={15} /> {minutes}:{seconds}</div><button type="button" onClick={onClose} className="grid h-10 w-10 place-items-center rounded-xl border border-ink/[0.08] bg-white/55 text-muted transition hover:border-coral/25 hover:bg-coral/10 hover:text-coral" aria-label="Save progress and close assessment" title="Save progress and close"><X size={18} /></button></div>
         </div>
         <div className="mt-6 flex gap-1.5">{questions.map((item, questionIndex) => <span key={item.id} className={`h-1.5 flex-1 rounded-full ${questionIndex <= index ? "bg-cobalt" : "bg-ink/[0.08]"}`} />)}</div>
         <div className="mt-8 flex items-center justify-between"><p className="text-xs font-bold text-muted">QUESTION {index + 1} OF {questions.length}</p><p className="text-[10px] font-bold text-muted">{answeredCount}/{questions.length} answered</p></div>
