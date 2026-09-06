@@ -2034,7 +2034,6 @@ function ProfilePage({ user, onSave, notify }) {
           <span className="tag mt-4 !text-jade"><CheckCircle2 size={12} /> Authenticated student</span>
           <SocialProfilePreview avatar={avatar} name={form.name} profile={form} />
         </div>
-        <div className="panel p-5"><h3 className="text-sm font-extrabold">Visibility</h3><div className="mt-4 space-y-3">{[["Open to opportunities", true], ["Show profile in community", true], ["Weekly progress email", false]].map(([label, enabled]) => <label key={label} className="flex items-center justify-between text-xs font-semibold"><span>{label}</span><input type="checkbox" defaultChecked={enabled} className="h-4 w-4 accent-cobalt" /></label>)}</div></div>
       </aside>
       <section className="panel p-6">
         <div className="mb-6 flex items-center justify-between"><div><h2 className="text-lg font-extrabold">Personal & career details</h2><p className="text-xs text-muted">Used to personalize recommendations.</p></div><Pencil size={17} className="text-muted" /></div>
