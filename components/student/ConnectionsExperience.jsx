@@ -73,7 +73,7 @@ function ConnectionSocialLinks({ student }) {
   );
 }
 
-function PersonResult({ student, onConnect, onAccept, onCancel, onMessage, busyId }) {
+function PersonResult({ student, onConnect, onAccept, onDecline, onCancel, onMessage, busyId }) {
   const status = student.connection_status || "none";
   const isBusy = Number(busyId) === Number(student.student_id) || sameConnection(busyId, student.connection_id);
   return (
@@ -85,7 +85,7 @@ function PersonResult({ student, onConnect, onAccept, onCancel, onMessage, busyI
       </div>
       {status === "none" && <button disabled={isBusy} onClick={() => onConnect(student)} className="btn-secondary min-h-9 shrink-0 px-3 text-xs disabled:opacity-50"><UserPlus size={14} /> Add</button>}
       {status === "outgoing" && <button disabled={isBusy} onClick={() => onCancel(student.connection_id)} className="btn-ghost min-h-9 shrink-0 px-2 text-xs text-muted disabled:opacity-50">Cancel</button>}
-      {status === "incoming" && <button disabled={isBusy} onClick={() => onAccept(student.connection_id)} className="btn-accent min-h-9 shrink-0 px-3 text-xs disabled:opacity-50"><Check size={14} /> Accept</button>}
+      {status === "incoming" && <div className="flex shrink-0 gap-1.5"><button disabled={isBusy} onClick={() => onAccept(student.connection_id)} className="btn-accent min-h-9 px-3 text-xs disabled:opacity-50"><Check size={14} /> Accept</button><button disabled={isBusy} onClick={() => onDecline(student.connection_id)} className="btn-secondary min-h-9 px-2 text-xs disabled:opacity-50" aria-label="Decline connection request" title="Decline request"><X size={14} /></button></div>}
       {status === "connected" && <button onClick={() => onMessage(student.connection_id)} className="btn-secondary min-h-9 shrink-0 px-3 text-xs"><MessageCircle size={14} /> Message</button>}
     </article>
   );
@@ -338,7 +338,7 @@ export default function ConnectionsPage({ search, setSearch, currentUser, notify
             {searchLoading && <p className="mt-5 flex items-center gap-2 text-xs text-muted"><LoaderCircle size={15} className="animate-spin" /> Searching students...</p>}
             {searchError && <p className="mt-4 rounded-xl bg-coral/10 p-3 text-xs font-bold text-coral">{searchError}</p>}
             {!searchLoading && canSearch && !searchError && !searchResults.length && <p className="mt-5 rounded-2xl bg-ink/[0.035] p-4 text-xs leading-5 text-muted dark:bg-white/[0.04]">No active students matched “{trimmedSearch}”. Check the student ID or try a different name.</p>}
-            <div className="mt-4 space-y-3">{searchResults.map((student) => <PersonResult key={student.student_id} student={student} onConnect={sendRequest} onAccept={(id) => respondToRequest(id, "accept")} onCancel={cancelRequest} onMessage={setSelectedConnectionId} busyId={busyStudentId || busyRequestId} />)}</div>
+            <div className="mt-4 space-y-3">{searchResults.map((student) => <PersonResult key={student.student_id} student={student} onConnect={sendRequest} onAccept={(id) => respondToRequest(id, "accept")} onDecline={(id) => respondToRequest(id, "decline")} onCancel={cancelRequest} onMessage={setSelectedConnectionId} busyId={busyStudentId || busyRequestId} />)}</div>
           </div>
 
           {!networkLoading && network.incomingRequests.length > 0 && <div className="panel p-5"><div className="flex items-center justify-between"><h2 className="font-extrabold">Connection requests</h2><span className="tag !text-coral">{network.incomingRequests.length} new</span></div><div className="mt-4 space-y-3">{network.incomingRequests.map((student) => <article key={student.connection_id} className="clay-list-item rounded-2xl bg-ink/[0.035] p-3 dark:bg-white/[0.04]"><div className="flex items-center gap-3"><Avatar student={student} /><div className="min-w-0 flex-1"><b className="block truncate text-sm">{student.name}</b><p className="truncate text-xs text-muted">{profileLine(student)} · ID {student.student_id}</p></div></div><div className="mt-3 flex gap-2"><button disabled={sameConnection(busyRequestId, student.connection_id)} onClick={() => respondToRequest(student.connection_id, "accept")} className="btn-accent min-h-9 flex-1 text-xs disabled:opacity-50"><Check size={14} /> Accept</button><button disabled={sameConnection(busyRequestId, student.connection_id)} onClick={() => respondToRequest(student.connection_id, "decline")} className="btn-secondary min-h-9 px-3 text-xs disabled:opacity-50"><X size={14} /> Ignore</button></div></article>)}</div></div>}

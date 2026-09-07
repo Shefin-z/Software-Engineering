@@ -23,6 +23,7 @@ assert.match(route, /connectionKeyFor/, "Connection APIs must work without relyi
 assert.match(route, /connection_record_id/, "Messages must use the connection record required by the database foreign key");
 assert.match(ui, /\/network\/students\?q=/, "The inbox UI must call the live student search API");
 assert.match(ui, /\/network\/conversations\//, "The inbox UI must load live conversations");
+assert.match(ui, /onDecline/, "Incoming connection requests in search results must support declining");
 assert.match(ui, /Clear history/, "The inbox UI must provide a clear-history action");
 assert.match(ui, /deleteMessage/, "The inbox UI must provide per-message deletion");
 assert.match(ui, /left !== null/, "Unconnected students must not be treated as a busy connection action");
