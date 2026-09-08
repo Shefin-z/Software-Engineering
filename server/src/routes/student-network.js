@@ -41,6 +41,14 @@ function connectedSocialFields() {
   return `sp.facebook_url, sp.instagram_url, sp.whatsapp, sp.twitter_url, sp.telegram`;
 }
 
+function connectedSkillFields() {
+  return `COALESCE((
+    SELECT GROUP_CONCAT(s.name ORDER BY s.name SEPARATOR ', ')
+    FROM user_skills us JOIN skills s ON s.id=us.skill_id
+    WHERE us.user_id=u.id
+  ), '') skills`;
+}
+
 async function getConnectionForStudent(connectionKey, studentId, { acceptedOnly = false } = {}) {
   const pair = parseConnectionKey(connectionKey);
   if (!pair) return null;
@@ -165,7 +173,7 @@ router.get("/connections", async (req, res, next) => {
     const [connections, incomingRequests] = await Promise.all([
       query(
         `SELECT CONCAT(c.user_a_id, '-', c.user_b_id) connection_id, c.created_at, c.accepted_at,
-                ${studentFields()}, ${connectedSocialFields()}, latest_message.body last_message, message_summary.last_message_at,
+                ${studentFields()}, ${connectedSocialFields()}, ${connectedSkillFields()}, latest_message.body last_message, message_summary.last_message_at,
                 COALESCE(message_summary.unread_count, 0) unread_count
          FROM student_connections c
          JOIN users u ON u.id=CASE WHEN c.user_a_id=? THEN c.user_b_id ELSE c.user_a_id END
@@ -196,6 +204,7 @@ router.get("/connections", async (req, res, next) => {
       connection_id: String(record.connection_id),
       student_id: Number(record.student_id),
       unread_count: Number(record.unread_count || 0),
+      skills: String(record.skills || "").split(",").map((skill) => skill.trim()).filter(Boolean).slice(0, 8),
     });
     res.json({
       connections: connections.map(normalise),
