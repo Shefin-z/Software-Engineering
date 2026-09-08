@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Bell, ChevronDown, LogOut, Menu, Search, X } from "lucide-react";
 import Brand from "./Brand";
 import ThemeToggle from "./ThemeToggle";
@@ -29,7 +29,18 @@ export default function DashboardShell({
 }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [dismissedNotificationIds, setDismissedNotificationIds] = useState([]);
   const [name, setName] = useState(() => getSessionName(role));
+  const profileMenuRef = useRef(null);
+  const notificationsMenuRef = useRef(null);
+  const notifications = navItems.filter(({ id, badge }) => badge && !dismissedNotificationIds.includes(id));
+
+  const closeMenus = () => {
+    setProfileOpen(false);
+    setNotificationsOpen(false);
+  };
+
   useEffect(() => {
     if (profileName) {
       setName(profileName);
@@ -41,9 +52,33 @@ export default function DashboardShell({
     } catch {}
   }, [profileName]);
 
+  useEffect(() => {
+    closeMenus();
+  }, [active]);
+
+  useEffect(() => {
+    const closeOnOutsideClick = (event) => {
+      if (profileMenuRef.current && !profileMenuRef.current.contains(event.target)) setProfileOpen(false);
+      if (notificationsMenuRef.current && !notificationsMenuRef.current.contains(event.target)) setNotificationsOpen(false);
+    };
+    const closeOnEscape = (event) => {
+      if (event.key === "Escape") closeMenus();
+    };
+
+    window.addEventListener("scroll", closeMenus, { passive: true });
+    document.addEventListener("mousedown", closeOnOutsideClick);
+    document.addEventListener("keydown", closeOnEscape);
+    return () => {
+      window.removeEventListener("scroll", closeMenus);
+      document.removeEventListener("mousedown", closeOnOutsideClick);
+      document.removeEventListener("keydown", closeOnEscape);
+    };
+  }, []);
+
   const navigate = (id) => {
     onNavigate(id);
     setMobileOpen(false);
+    closeMenus();
   };
 
   const logout = () => {
@@ -114,12 +149,40 @@ export default function DashboardShell({
           </form>
           <div className="ml-auto flex items-center gap-2">
             <ThemeToggle />
-            <button className="clay-icon-button relative grid h-10 w-10 place-items-center rounded-xl border border-ink/[0.08] bg-white/60 text-muted transition hover:bg-white hover:text-ink" aria-label="Notifications">
-              <Bell size={17} />
-              <span className="absolute right-2 top-2 h-2 w-2 rounded-full border-2 border-white bg-coral" />
-            </button>
-            <div className="relative">
-              <button onClick={() => setProfileOpen(!profileOpen)} className="clay-profile-button flex h-11 items-center gap-2 rounded-2xl border border-ink/[0.08] bg-white/60 pl-1.5 pr-2.5 transition hover:bg-white" aria-haspopup="menu" aria-expanded={profileOpen}>
+            <div className="relative" ref={notificationsMenuRef}>
+              <button
+                onClick={() => { setNotificationsOpen((open) => !open); setProfileOpen(false); }}
+                className="clay-icon-button relative grid h-10 w-10 place-items-center rounded-xl border border-ink/[0.08] bg-white/60 text-muted transition hover:bg-white hover:text-ink"
+                aria-label="Notifications"
+                aria-haspopup="menu"
+                aria-expanded={notificationsOpen}
+                aria-controls="dashboard-notifications"
+              >
+                <Bell size={17} />
+                {notifications.length > 0 && <span className="absolute right-2 top-2 h-2 w-2 rounded-full border-2 border-white bg-coral" />}
+              </button>
+              {notificationsOpen && (
+                <div id="dashboard-notifications" className="clay-popover glass-strong absolute right-0 top-12 z-50 w-72 animate-enter rounded-2xl p-2" role="menu" aria-label="Notifications">
+                  <div className="flex items-center justify-between px-3 py-2">
+                    <b className="text-sm">Notifications</b>
+                    {notifications.length > 0 && <button onClick={() => setDismissedNotificationIds(notifications.map(({ id }) => id))} className="text-xs font-bold text-cobalt hover:underline">Mark all read</button>}
+                  </div>
+                  {notifications.length ? notifications.map(({ id, label, badge }) => (
+                    <button
+                      key={id}
+                      onClick={() => { setDismissedNotificationIds((current) => [...current, id]); navigate(id); }}
+                      className="w-full rounded-xl px-3 py-2.5 text-left transition hover:bg-white/70"
+                      role="menuitem"
+                    >
+                      <span className="block text-xs font-bold text-ink">{label}</span>
+                      <span className="mt-0.5 block text-[11px] text-muted">{badge === "New" ? "New activity needs your attention." : `${badge} item${String(badge) === "1" ? "" : "s"} need your attention.`}</span>
+                    </button>
+                  )) : <p className="px-3 py-4 text-center text-xs font-medium text-muted">You are all caught up.</p>}
+                </div>
+              )}
+            </div>
+            <div className="relative" ref={profileMenuRef}>
+              <button onClick={() => { setProfileOpen((open) => !open); setNotificationsOpen(false); }} className="clay-profile-button flex h-11 items-center gap-2 rounded-2xl border border-ink/[0.08] bg-white/60 pl-1.5 pr-2.5 transition hover:bg-white" aria-haspopup="menu" aria-expanded={profileOpen} aria-controls="dashboard-profile-menu">
                 <span className={`grid h-8 w-8 place-items-center overflow-hidden rounded-xl text-xs font-extrabold text-white ${role === "admin" ? "bg-plum" : "bg-cobalt"}`}>{profileAvatar ? <img src={profileAvatar} alt="" className="h-full w-full object-cover" /> : name.split(" ").map((x) => x[0]).slice(0, 2).join("")}</span>
                 <span className="hidden text-left sm:block">
                   <b className="block max-w-28 truncate text-xs">{name}</b>
@@ -128,8 +191,8 @@ export default function DashboardShell({
                 <ChevronDown className="text-muted" size={14} />
               </button>
               {profileOpen && (
-                <div className="clay-popover glass-strong absolute right-0 top-14 w-52 animate-enter rounded-2xl p-2" role="menu">
-                  <button onClick={() => { navigate(role === "admin" ? "settings" : "profile"); setProfileOpen(false); }} className="dash-side-link">Account settings</button>
+                <div id="dashboard-profile-menu" className="clay-popover glass-strong absolute right-0 top-14 w-52 animate-enter rounded-2xl p-2" role="menu">
+                  <button onClick={() => navigate(role === "admin" ? "settings" : "profile")} className="dash-side-link">Account settings</button>
                   <button onClick={logout} className="dash-side-link text-coral"><LogOut size={16} /> Sign out</button>
                 </div>
               )}
