@@ -12,6 +12,8 @@ assert.match(schema, /UNIQUE KEY uq_student_connection_pair/, "A pair of student
 assert.match(schema, /CREATE TABLE IF NOT EXISTS student_messages/, "Private messages need a database table");
 assert.match(schema, /connection_key VARCHAR\(64\)/, "Messages need a stable connection-pair key for legacy schemas");
 assert.match(route, /router\.get\("\/students"/, "Students must be searchable");
+assert.match(route, /const like = `%\$\{term\.toLowerCase\(\)\}%`/, "Student search terms must be normalized before matching");
+assert.match(route, /LOWER\(u\.name\) LIKE \?/, "Student name search must be case-insensitive regardless of database collation");
 assert.match(route, /router\.post\("\/connections"/, "Students must be able to send connection requests");
 assert.match(route, /status='accepted'/, "Messages must be gated by an accepted connection");
 assert.match(route, /router\.post\("\/conversations\/:connectionId\/messages"/, "Connected students must be able to send messages");

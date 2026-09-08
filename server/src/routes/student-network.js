@@ -73,10 +73,12 @@ router.get("/students", async (req, res, next) => {
     const isStudentId = /^\d+$/.test(term);
     if (!term || (!isStudentId && term.length < 2)) return res.json([]);
 
-    const like = `%${term}%`;
+    // Do not rely on the database collation for name matching. Some deployments
+    // use a case-sensitive collation, which would make "shefin" miss "Shefin".
+    const like = `%${term.toLowerCase()}%`;
     const searchSql = isStudentId
-      ? "AND (u.id=? OR u.name LIKE ? OR COALESCE(sp.university, '') LIKE ?)"
-      : "AND (u.name LIKE ? OR COALESCE(sp.university, '') LIKE ? OR COALESCE(sp.target_role, '') LIKE ?)";
+      ? "AND (u.id=? OR LOWER(u.name) LIKE ? OR LOWER(COALESCE(sp.university, '')) LIKE ?)"
+      : "AND (LOWER(u.name) LIKE ? OR LOWER(COALESCE(sp.university, '')) LIKE ? OR LOWER(COALESCE(sp.target_role, '')) LIKE ?)";
     const searchValues = isStudentId ? [Number(term), like, like] : [like, like, like];
     const rows = await query(
       `SELECT ${studentFields()}, CONCAT(c.user_a_id, '-', c.user_b_id) connection_id,
